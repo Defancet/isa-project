@@ -1,0 +1,58 @@
+.TH DHCP-STATS 1 "November 15, 2023" "dhcp-stats 1.0" "DHCP Statistics Collector Manual"
+
+.SH NAME
+dhcp-stats \- DHCP (Dynamic Host Configuration Protocol) Statistics Collector
+
+.SH SYNOPSIS
+.B dhcp-stats
+[\fB\-i\fR \fIinterface\fR | \fB\-r\fR \fIfilename\fR]
+[\fIip-prefix\fR [ \fIip-prefix\fR [ ... ] ]]
+
+.SH DESCRIPTION
+.B dhcp-stats
+collects and displays DHCP statistics for specified IP prefixes. It can operate either in live capture mode on a network interface or analyze a pcapng file.
+
+.SH OPTIONS
+.TP
+.B \-i \fIinterface\fR
+specify the network interface for live packet capture.
+
+.TP
+.B \-r \fIfilename\fR
+specify the pcapng file for offline analysis.
+
+.TP
+.B \fIip-prefix\fR
+specify one or more IP prefixes to monitor.
+
+.SH EXAMPLES
+To collect DHCP statistics on interface lo for the IP prefixes 192.168.1.0/26, 172.16.32.0/24 and 192.168.0.0/22:
+.PP
+.nf
+.RS
+dhcp-stats -i lo 192.168.1.0/26 172.16.32.0/24 192.168.0.0/22
+.RE
+.fi
+
+To collect DHCP statistics from the pcapng file dhcp.pcapng for the IP prefixes 192.168.1.0/24 and 172.16.32.0/24:
+.PP
+.nf
+.RS
+dhcp-stats -r dhcp.pcapng 192.168.1.0/24 172.16.32.0/24
+
+.SH FILES
+.TP
+.I /src/dhcp-stats.cpp
+
+.SH SEE ALSO
+\fBpcap\fR(3), \fBsyslog\fR(3).
+
+.SH AUTHOR
+Written by Maksim Kalutski <xkalut00>.
+
+.SH COPYRIGHT
+This program is free software: you can redistribute it and/or modify it under the terms of the Mozilla Public License 2.0.
+You should have received a copy of the Mozilla Public License 2.0 along with this program. If not, see <https://mozilla.org/MPL/2.0/>.
+
+.SH BUGS
+Please report any bugs or feature requests to <xkalut00@vutbr.cz>
