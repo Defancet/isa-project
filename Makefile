@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -g
 LFLAGS = -lpcap -lncurses
 SRC_DIR = src
 INCLUDE_DIR = include
