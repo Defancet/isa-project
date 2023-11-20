@@ -47,28 +47,24 @@ void updateNcurses(const Options &options) {
     std::sort(sortedPrefixes.begin(), sortedPrefixes.end(),
               [](const auto &a, const auto &b) { return b.second < a.second; });
 
-    int prefixCount = 0;
-    for (const auto &pair: sortedPrefixes) {
-        auto it = options.prefixStatistics.find(pair.first);
-        if (it != options.prefixStatistics.end()) {
-            prefixCount++;
-        }
-    }
-
     for (const auto &pair: sortedPrefixes) {
         auto it = options.prefixStatistics.find(pair.first);
         if (it != options.prefixStatistics.end()) {
             mvwprintw(win, row, 0, "%s %u %u %.2f%%", it->second.prefix.c_str(), it->second.maxHosts,
                       it->second.allocatedAddresses, it->second.utilization);
 
-            if (it->second.utilization > 50.0) {
-                mvwprintw(win, prefixCount + 1, 0, "prefix %s exceeded 50%% of allocations .",
-                          it->second.prefix.c_str());
-                prefixCount++;
-            }
-
             row++;
         }
     }
+
+    for (const auto &pair : sortedPrefixes) {
+        auto it = options.prefixStatistics.find(pair.first);
+        if (it != options.prefixStatistics.end() && it->second.utilization >= 50.0) {
+            mvwprintw(win, row, 0, "Prefix %s exceeded 50%% of allocations .",
+                      it->second.prefix.c_str());
+        }
+        row++;
+    }
+
     wrefresh(win);
 }
