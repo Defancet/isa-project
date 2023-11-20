@@ -42,16 +42,63 @@ dhcp-stats -r dhcp.pcapng 192.168.1.0/24 172.16.32.0/24
 
 .SH FILES
 .TP
-.I /src/dhcp-stats.cpp
+/src/dhcp-stats.cpp
+Main file of the project.
+.TP
+/src/argument_parser.cpp
+Source file contains the implementation of command-line argument parsing function.
+.TP
+/include/argument_parser.h
+Header file for argument_parser.cpp
+.TP
+/src/live_capture.cpp
+Implementation of live packet capture functionality
+.TP
+/include/live_capture.h
+Header file for live_capture.cpp
+.TP
+/src/ncurses_utils.cpp
+Implementation of functions for ncurses-based user interface
+.TP
+/include/ncurses_utils.h
+Header file for ncurses_utils.cpp
+.TP
+/src/packet_process.cpp
+Implementation of packet processing functions
+.TP
+/include/packet_process.h
+Header file for packet_process.cpp
+.TP
+/src/pcap_process.cpp
+Implementation of pcap process function
+.TP
+/include/pcap_process.h
+Header file for pcap_process.cpp
+.TP
+/src/print_options.cpp
+Implementation file for functions related to printing options.
+.TP
+/include/print_options.h
+Header file for print_options.cpp
+.TP
+/src/signal_handler.cpp
+Signal handler implementation
+.TP
+/include/signal_handler.h
+Header file for signal_handler.cpp
+.TP
+/include/structs.h
+Header file defining data structures
 
 .SH SEE ALSO
-\fBpcap\fR(3), \fBsyslog\fR(3).
+\fBpcap\fR(3PCAP), \fBsyslog\fR(3), \fBncurses\fR(3x)
 
 .SH AUTHOR
 Written by Maksim Kalutski <xkalut00>.
 
 .SH COPYRIGHT
 This program is free software: you can redistribute it and/or modify it under the terms of the Mozilla Public License 2.0.
+
 You should have received a copy of the Mozilla Public License 2.0 along with this program. If not, see <https://mozilla.org/MPL/2.0/>.
 
 .SH BUGS
