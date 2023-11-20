@@ -19,8 +19,8 @@ void processPcapngFile(const std::string &filename, const std::vector<std::strin
 
     handle = pcap_open_offline(filename.c_str(), errbuf);
     if (handle == nullptr) {
-        std::cerr << "Error opening pcapng file: " << errbuf << std::endl;
         endNcurses();
+        std::cerr << "Error opening pcapng file: " << errbuf << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -42,8 +42,8 @@ void processPcapngFile(const std::string &filename, const std::vector<std::strin
 
     int loopResult = pcap_loop(handle, 0, packetHandler, reinterpret_cast<u_char *>(&userDataStruct));
     if (loopResult == -1) {
-        std::cerr << "Error in pcap_loop: " << pcap_geterr(handle) << std::endl;
         endNcurses();
+        std::cerr << "Error in pcap_loop: " << pcap_geterr(handle) << std::endl;
         exit(EXIT_FAILURE);
     }
 

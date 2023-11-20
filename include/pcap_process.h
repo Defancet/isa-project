@@ -15,8 +15,10 @@
 #include <algorithm>
 #include "pcap/pcap.h"
 #include "structs.h"
+#include <netinet/udp.h>
 #include "ncurses_utils.h"
 #include "packet_process.h"
+
 
 /**
  * @brief Processes a pcapng file to monitor DHCP communication.
