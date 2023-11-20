@@ -18,6 +18,20 @@ void printUsage(const char *programName) {
     std::cout << "  -i <interface> - interface on which the program can listen\n\n";
 }
 
+bool isValidPrefix(const std::string& prefix) {
+    size_t pos = prefix.find('/');
+    if (pos == std::string::npos) {
+        return false;
+    }
+
+    std::string address = prefix.substr(0, pos);
+    std::string lengthStr = prefix.substr(pos + 1);
+
+    int length = std::stoi(lengthStr);
+
+    return length >= 0 && length <= 32;
+}
+
 Options parseArguments(int argc, char *argv[]) {
     Options options;
     int opt;
@@ -51,11 +65,17 @@ Options parseArguments(int argc, char *argv[]) {
     }
 
     for (int i = optind; i < argc; ++i) {
-        options.prefixes.emplace_back(argv[i]);
+        if (isValidPrefix(argv[i])) {
+            options.prefixes.emplace_back(argv[i]);
+        } else {
+            std::cerr << "Error: Invalid IP prefix format or length out of range: " << argv[i] << std::endl;
+            printUsage(argv[0]);
+            std::exit(EXIT_FAILURE);
+        }
     }
 
     if (options.prefixes.empty() || (!hasInterface && !hasFilename)) {
-        std::cerr << "Error: At least one IP prefix and either -i or -r option are required." << std::endl;
+        std::cerr << "Error: At least one valid IP prefix and either -i or -r option are required." << std::endl;
         printUsage(argv[0]);
         std::exit(EXIT_FAILURE);
     }

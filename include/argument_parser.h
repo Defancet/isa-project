@@ -12,6 +12,7 @@
 #define ISA_PROJECT_ARGUMENT_PARSER_H
 
 #include <iostream>
+#include <cstring>
 #include <getopt.h>
 #include <stdexcept>
 #include "../include/structs.h"
