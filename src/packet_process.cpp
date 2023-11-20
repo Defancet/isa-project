@@ -16,7 +16,14 @@ uint32_t calculateMaxHosts(const std::string &prefix) {
         throw std::invalid_argument("Invalid IP prefix format: " + prefix);
     }
 
+
     std::string mask = prefix.substr(pos + 1);
+    int prefixLength = std::stoi(mask);
+
+    if (prefixLength == 31 || prefixLength == 32) {
+        return 0;
+    }
+
     return (1u << (32 - std::stoi(mask))) - 2;
 }
 
@@ -27,28 +34,34 @@ void updateStats(const std::string &prefix, uint32_t allocatedAddresses, Options
             return;
         }
 
-        it->second.allocatedAddresses += allocatedAddresses;
-        it->second.utilization =
-                (static_cast<double>(it->second.allocatedAddresses) / it->second.maxHosts) * 100;
+        if (it->second.maxHosts != 0) {
+            it->second.allocatedAddresses += allocatedAddresses;
+            it->second.utilization =
+                    (static_cast<double>(it->second.allocatedAddresses) / it->second.maxHosts) * 100;
+        } else {
+            it->second.allocatedAddresses = 0;
+            it->second.utilization = 0;
+        }
 
         if (it->second.utilization >= 50.0 && it->second.utilization - allocatedAddresses < 50.0) {
-            syslog(LOG_WARNING, "prefix %s exceeded 50%% of allocations.", prefix.c_str());
+            syslog(LOG_WARNING, "prefix %s exceeded 50%% of allocations .", prefix.c_str());
         }
     } else {
         PrefixStats newStats;
         newStats.prefix = prefix;
         newStats.maxHosts = calculateMaxHosts(prefix);
-        newStats.allocatedAddresses = allocatedAddresses;
-        newStats.utilization = (static_cast<double>(allocatedAddresses) / newStats.maxHosts) * 100;
 
-        if (newStats.utilization >= 50.0) {
-            syslog(LOG_WARNING, "prefix %s exceeded 50%% of allocations.", prefix.c_str());
+        if (newStats.maxHosts != 0) {
+            newStats.allocatedAddresses = allocatedAddresses;
+            newStats.utilization = (static_cast<double>(allocatedAddresses) / newStats.maxHosts) * 100;
+        } else {
+            newStats.allocatedAddresses = 0;
+            newStats.utilization = 0;
         }
 
         options.prefixStatistics[prefix] = newStats;
     }
 }
-
 
 void processPacket(const u_char *packet, const std::vector<std::string> &prefixes, Options &options) {
     struct ether_header *eth_header = (struct ether_header *) packet;
@@ -75,7 +88,7 @@ void processPacket(const u_char *packet, const std::vector<std::string> &prefixe
             uint32_t prefixMask = (0xFFFFFFFF << (32 - std::stoi(mask))) & 0xFFFFFFFF;
             uint32_t prefixStart = ntohl(inet_addr(ipPrefix.c_str())) & prefixMask;
 
-            if ((src_ip & prefixMask) == prefixStart) {
+            if ((src_ip & prefixMask) == prefixStart && src_ip != (prefixStart | 0) && src_ip != (prefixStart | 0xFFFFFFFF)) {
                 updateStats(prefix, 1, options);
 
                 for (const auto &otherPrefix: prefixes) {
@@ -86,7 +99,7 @@ void processPacket(const u_char *packet, const std::vector<std::string> &prefixe
                         uint32_t otherPrefixMask = (0xFFFFFFFF << (32 - std::stoi(otherMask))) & 0xFFFFFFFF;
                         uint32_t otherPrefixStart = ntohl(inet_addr(otherIpPrefix.c_str())) & otherPrefixMask;
 
-                        if ((src_ip & otherPrefixMask) == otherPrefixStart) {
+                        if ((src_ip & otherPrefixMask) == otherPrefixStart && src_ip != (otherPrefixStart | 0) && src_ip != (otherPrefixStart | 0xFFFFFFFF)) {
                             updateStats(otherPrefix, 1, options);
                             break;
                         }
@@ -100,6 +113,7 @@ void processPacket(const u_char *packet, const std::vector<std::string> &prefixe
 }
 
 void packetHandler(u_char *userData, const struct pcap_pkthdr *pkthdr, const u_char *packet) {
+    (void) pkthdr;
     UserData *userDataStruct = reinterpret_cast<UserData *>(userData);
     processPacket(packet, userDataStruct->prefixes, userDataStruct->options);
 }
