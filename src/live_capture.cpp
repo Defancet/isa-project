@@ -17,6 +17,7 @@ void captureLivePackets(const std::string &interface, const std::vector<std::str
 
     handle = pcap_open_live(interface.c_str(), BUFSIZ, 1, 1000, errbuf);
     if (handle == nullptr) {
+        endNcurses();
         std::cerr << "Error opening live capture on interface " << interface << ": " << errbuf
                   << std::endl;
         exit(EXIT_FAILURE);
