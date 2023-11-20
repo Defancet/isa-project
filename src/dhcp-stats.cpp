@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     printOptions(options);
 
     for (const auto &pair : options.prefixStatistics) {
-        if (pair.second.utilization > 50.0) {
+        if (pair.second.utilization >= 50.0) {
             std::cout << "prefix " << pair.second.prefix << " exceeded 50% of allocations ." << std::endl;
         }
     }
